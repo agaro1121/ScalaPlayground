@@ -66,9 +66,9 @@ object Example {
     * 2. Correctness - get the type safety of a data type without the runtime allocation overhead
     * Example:
     */
-  class Meter(val value: Double) extends AnyVal {
+  /*class Meter(val value: Double) extends AnyVal {
     def +(m: Meter): Meter = new Meter(value + m.value)
-  }
+  }*/
 
   /**
     * Only the underlying Double is used below.
@@ -85,7 +85,8 @@ object Example {
     * When Allocation Is Necessary
     *
     * JVM does not support value classes,
-    * Scala sometimes needs to actually instantiate a value class
+    * Scala sometimes needs to actually instantiate a valu
+    * e class
     *
     * Scenarios Below:
     */
@@ -95,7 +96,9 @@ object Example {
     */
   trait Distance extends Any
 
-  case class Meter(val value: Double) extends AnyVal with Distance
+  case class Meter(val value: Double) extends AnyVal with Distance {
+    def +(m: Meter): Meter = new Meter(value + m.value)
+  }
 
   //This requires allocation (Polymorphic I guess?)
   def add(a: Distance, b: Distance): Distance = ???
