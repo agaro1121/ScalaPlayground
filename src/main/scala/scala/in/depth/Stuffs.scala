@@ -3,6 +3,7 @@ package scala.in.depth
 /**
   * Created by Hierro on 5/8/16.
   */
+@annotation.implicitNotFound(msg = "You fucked up. Can't find CanDo[${A}]")
 trait CanDo[A] {
   def doStuff[A](a: A): Unit
 }

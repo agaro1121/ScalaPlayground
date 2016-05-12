@@ -46,3 +46,21 @@ object Constraints extends App {
 
 }
 
+object Constraints2 extends App {
+
+  def peek[A,C](col: C)(implicit ev: C =:= List[Int]) = (col.head,col) //has to be exact match
+  def peek2[A,C](col: C)(implicit ev: C =:= List[String]) = (col.head,col)
+  def peek3[A,C](col: C)(implicit ev: C =:= Traversable[Int]) = (col.head,col) //has to be exact match
+
+  println(peek(List(1, 2, 3)))
+  println(peek2(List("1", "2", "3")))
+//  println(peek3(List(1, 2, 3))) //Does not work
+
+
+}
+
+object Constraints3 extends App {
+  def peek[C, A](col: C)(implicit ev: C <:< Traversable[A]) = (col.head, col) //has to be subtype of Traversable[A]
+
+  println(peek(List(1, 2, 3)))
+}
