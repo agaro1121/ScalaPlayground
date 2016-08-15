@@ -8,8 +8,8 @@
 		extra-scalaVersion="2.10"
 		extra-sbtVersion="0.13"
 		conf="optional"
-		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool"
-		date="20160508172523"/>
+		confs="compile, runtime, test, provided, optional, compile-internal, runtime-internal, test-internal, plugin, sources, docs, pom, scala-tool, ensime-internal"
+		date="20160814215735"/>
 	<dependencies>
 	</dependencies>
 </ivy-report>
