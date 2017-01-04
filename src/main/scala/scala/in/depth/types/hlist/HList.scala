@@ -9,11 +9,11 @@ trait HList {}
 final case class HCons[H, T <: HList](head: H, tail: T) extends HList {
   def ::[T](v: T) = HCons(v, this)
 
-  @annotation.tailrec
+  /*@annotation.tailrec
   def :::[T](v: T):T = v match {
     case x : HNil => this
     case x : HCons => (this.::(x.head)).:::(x.tail)
-  }
+  }*/
 
   override def toString = head + " :: " + tail
 }
@@ -39,7 +39,7 @@ sealed trait IndexedView {
   def get = fold( (_, value, _) => value)
 }
 
-class HListView[H, T <: HList](val list : H :: T)
+/*class HListView[H, T <: HList](val list : H :: T)
   extends IndexedView {
   type Before = HNil
   type After = T
@@ -50,7 +50,7 @@ class HListView[H, T <: HList](val list : H :: T)
   def fold[R](f : (Before, At, After) => R): R =
     f(HNil, list.head, list.tail)
 
-  def remove = fold {
+/*  def remove = fold {
     (before, _, after) => before ::: after
   }
   def insertBefore[B](x : B) = fold {
@@ -62,8 +62,8 @@ class HListView[H, T <: HList](val list : H :: T)
   }
   def insertAfter[B](x : B) = fold {
     (before, current, after) => before ::: (current :: x :: after)
-  }
-}
+  }*/
+}*/
 
 
 
