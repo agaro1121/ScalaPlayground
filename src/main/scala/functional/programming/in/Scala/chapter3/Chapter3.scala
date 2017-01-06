@@ -41,20 +41,49 @@ object List {
   def dropWhile[A](l: List[A], f: A => Boolean): List[A] =
     l match {
       case Nil ⇒ l
-      case Cons(x, xs) ⇒ if(f(x)) dropWhile(xs, f) else l
+      case Cons(x, xs) ⇒ if (f(x)) dropWhile(xs, f) else l
     }
 
   def append[A](a1: List[A], a2: List[A]): List[A] = a1 match {
     case Nil => a2
-    case Cons(h,t) => Cons(h, append(t, a2)) }
+    case Cons(h, t) => Cons(h, append(t, a2))
+  }
 
   //3.6
   def init[A](l: List[A]): List[A] =
     l match {
       case Nil ⇒ l
-      case Cons(x, Cons(_ , Nil)) ⇒ Cons(x, Nil)
-      case Cons(x , xs) ⇒ Cons(x, init(xs))
+      case Cons(x, Cons(_, Nil)) ⇒ Cons(x, Nil)
+      /* this is why this is not efficient
+         Constantly having to create a new Cons cell
+       */
+      case Cons(x, xs) ⇒ Cons(x, init(xs))
     }
+
+  /*
+  * This H.O. Function is written with 2 param lists to assist
+   * with type inference.
+   * It is also curried. So passing only a list will return a
+   * HO Function that takes a function as a param
+  *
+  * Dupe - guess I did it above :-)
+  * */
+  /*def dropWhile[A](as: List[A])(f: A => Boolean): List[A] = as match {
+    case Cons(h, t) if f(h) => dropWhile(t)(f)
+    case _ => as
+  }*/
+
+  def foldRight[A,B](as: List[A], z: B)(f: (A, B) => B): B =
+    as match {
+      case Nil => z
+      case Cons(x, xs) => f(x, foldRight(xs, z)(f))
+    }
+
+  def sum(ns: List[Int]): Int = foldRight(ns, 0)((x,y) => x + y)
+  def product(ns: List[Double]): Double = foldRight(ns, 1.0)(_ * _)
+
+  //3.9
+  def length[A](as: List[A]): Int = foldRight(as, 0)((_, acc) ⇒ acc + 1)
 
 }
 
@@ -74,4 +103,5 @@ object Chapter3 extends App {
   println("List.drop= " + List.drop(2, testList))
   println("List.dropWhile= " + List.dropWhile(testList, (x: Int) ⇒ x < 4))
   println("List.init= " + List.init(testList))
+  println("List.length= " + List.length(testList))
 }
