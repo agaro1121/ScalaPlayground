@@ -85,9 +85,43 @@ object List {
   //3.9
   def length[A](as: List[A]): Int = foldRight(as, 0)((_, acc) ⇒ acc + 1)
 
+  //3.10
+  @tailrec
+  def foldLeft[A,B](as: List[A], z: B)(f: (B, A) => B): B =
+    as match {
+      case Nil ⇒ z
+      case Cons(x,xs) ⇒ foldLeft(xs,f(z,x))(f)
+    }
+
+  //3.11
+  def sumWithFoldLeft(ns: List[Int]): Int = foldLeft(ns, 0)(_ + _)
+  def productWithFoldLeft(ns: List[Double]): Double = foldLeft(ns, 1.0)(_ * _)
+  def lengthWithFoldLeft[A](as: List[A]): Int = foldLeft(as, 0)((acc , _) ⇒ acc + 1)
+
+    //3.12
+  def reverse[A, B <: A](l: List[A]): List[A] =
+    foldLeft(l, Nil: List[A])((acc, elem) ⇒ Cons(elem, acc))
+
+  //3.13
+  def foldLeftUsingFoldRight[A,B](as: List[A], z: B)(f: (B, A) => B): B =
+    foldRight(as,z)((elem, acc) ⇒ f(acc, elem))
+
+  def foldRightUsingFoldLeft[A,B](as: List[A], z: B)(f: (A, B) => B): B =
+    foldLeft(as, z)((acc, elem) ⇒ f(elem, acc))
+
+  //3.14
+  def appendWithFoldRight[A, B <: A](l1: List[A], l2: List[A]): List[A] =
+//    foldLeft(l2, l1)((acc, elem) ⇒ Cons(elem, acc)) //list comes out of order
+    foldRight(l1, l2)(Cons(_,_))
+
+  //3.15
+  def flatten[A](l: List[List[A]]): List[A] =
+    foldLeft(l, Nil: List[A])((acc, elem) ⇒ appendWithFoldRight(acc, elem))
+
 }
 
 object Chapter3 extends App {
+  import List._
 
   //3.1
   val x = List(1, 2, 3, 4, 5) match {
@@ -100,8 +134,20 @@ object Chapter3 extends App {
   println(x)
 
   val testList = List(1, 2, 3, 4, 5)
-  println("List.drop= " + List.drop(2, testList))
-  println("List.dropWhile= " + List.dropWhile(testList, (x: Int) ⇒ x < 4))
-  println("List.init= " + List.init(testList))
-  println("List.length= " + List.length(testList))
+  val testListToBeAppended = List(6,7,8)
+  val testList2 = List(1.0, 2.0, 3.0)
+  println("drop= "                   + drop(2, testList))
+  println("dropWhile= "              + dropWhile(testList, (x: Int) ⇒ x < 4))
+  println("init= "                   + init(testList))
+  println("length= "                 + length(testList))
+  println("foldLeft= "               + foldLeft(testList, 0)(_ + _))
+  println("sumWithFoldLeft= "        + sumWithFoldLeft(testList))
+  println("productWithFoldLeft= "    + productWithFoldLeft(testList2))
+  println("lengthWithFoldLeft= "     + lengthWithFoldLeft(testList))
+  println("reverse= "                + reverse(testList))
+  println("appendWithFoldLeft= "     + appendWithFoldRight(testList, testListToBeAppended))
+  println("append"                   + append(testList, testListToBeAppended))
+  println("foldLeftUsingFoldRight= " + foldLeftUsingFoldRight(testList, 0)(_ + _))
+  println("foldRightUsingFoldLeft= " + foldRightUsingFoldLeft(testList, 0)(_ + _))
+  println("flatten= " + flatten(List(testList, testListToBeAppended)))
 }

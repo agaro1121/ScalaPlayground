@@ -1,5 +1,7 @@
 package functional.programming.in.Scala
 
+import java.time.LocalDate
+
 import functional.programming.in.Scala.chapter2.Chapter2
 import functional.programming.in.Scala.chapter2.Chapter2._
 
@@ -21,4 +23,11 @@ object Main {
     val l = Array[Int](1, 2, 3, 2, 5, 4)
     println(s"is Sorted ? ${isSorted(l, (x: Int, y: Int) => x < y)}")
   }
+
+
+}
+
+sealed abstract case class Conf(name: String)
+object Conf {
+  def apply(name: String): Conf = new Conf(name + " is taking over the world"){}
 }
