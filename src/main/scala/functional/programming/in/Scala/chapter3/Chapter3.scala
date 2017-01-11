@@ -118,6 +118,30 @@ object List {
   def flatten[A](l: List[List[A]]): List[A] =
     foldLeft(l, Nil: List[A])((acc, elem) ⇒ appendWithFoldRight(acc, elem))
 
+  //3.16
+  def addOne(l: List[Int]): List[Int] =
+    l match {
+      case Nil         => l
+      case Cons(x, xs) => Cons(x + 1, addOne(xs))
+    }
+
+  //3.17
+  def dToS(l: List[Double]): List[String] =
+    l match {
+      case Nil => Nil
+      case Cons(x, xs) => Cons("stringForm="+x.toString, dToS(xs))
+    }
+
+  //3.18
+  def map[A, B](l: List[A], f: A => B): List[B] =
+    l match {
+      case Nil         => Nil
+      case Cons(x, xs) => Cons(f(x), map(xs, f))
+    }
+
+  //3.19
+
+
 }
 
 object Chapter3 extends App {
@@ -150,4 +174,7 @@ object Chapter3 extends App {
   println("foldLeftUsingFoldRight= " + foldLeftUsingFoldRight(testList, 0)(_ + _))
   println("foldRightUsingFoldLeft= " + foldRightUsingFoldLeft(testList, 0)(_ + _))
   println("flatten= " + flatten(List(testList, testListToBeAppended)))
+  println("addOne =" + addOne(testList))
+  println("dToS =" + dToS(testList2))
+  println("map(+2)= "+ map(testList, (x:Int) => x + 2))
 }
