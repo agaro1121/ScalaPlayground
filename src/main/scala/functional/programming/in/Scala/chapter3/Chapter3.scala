@@ -140,7 +140,22 @@ object List {
     }
 
   //3.19
+  def filter[A](l: List[A])(f: A => Boolean): List[A] =
+    l match {
+      case Nil         => l
+      case Cons(x, xs) => if(f(x)) Cons(x, filter(xs)(f)) else filter(xs)(f)
+    }
 
+  //3.20
+  def flatMap[A,B](l: List[A])(f: A => List[B]): List[B] =
+    l match {
+      case Nil         => Nil
+      case Cons(x, xs) => append(f(x),flatMap(xs)(f))
+    }
+
+  //3.21
+  def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
+    ???
 
 }
 
@@ -177,4 +192,8 @@ object Chapter3 extends App {
   println("addOne =" + addOne(testList))
   println("dToS =" + dToS(testList2))
   println("map(+2)= "+ map(testList, (x:Int) => x + 2))
+  println("filter= " + filter(testList)((x: Int) => x < 3))
+  println("flatMap= "+flatMap(testList)((x: Int) => Cons(x + 1, Nil)))
+  
+
 }
