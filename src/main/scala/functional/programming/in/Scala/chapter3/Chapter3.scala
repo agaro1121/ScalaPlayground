@@ -155,7 +155,21 @@ object List {
 
   //3.21
   def filterViaFlatMap[A](l: List[A])(f: A => Boolean): List[A] =
-    ???
+    flatMap(l)( a => if(f(a)) Cons(a, Nil) else Nil )
+
+  //3.22
+  def addEachElement(a: List[Int], b: List[Int]): List[Int] =
+    (a, b) match {
+      case (_, Nil) | (Nil, _) => Nil
+      case (Cons(h1, t1), Cons(h2, t2)) => Cons(h1+h2, addEachElement(t1, t2))
+    }
+
+  //3.23
+  def zipWith[A](a: List[A], b: List[A])(f: (A,A) => A): List[A] =
+    (a, b) match {
+      case (_, Nil) | (Nil, _)          => Nil
+      case (Cons(h1, t1), Cons(h2, t2)) => Cons(f(h1, h2), zipWith(t1, t2)(f))
+    }
 
 }
 
@@ -188,12 +202,13 @@ object Chapter3 extends App {
   println("append"                   + append(testList, testListToBeAppended))
   println("foldLeftUsingFoldRight= " + foldLeftUsingFoldRight(testList, 0)(_ + _))
   println("foldRightUsingFoldLeft= " + foldRightUsingFoldLeft(testList, 0)(_ + _))
-  println("flatten= " + flatten(List(testList, testListToBeAppended)))
-  println("addOne =" + addOne(testList))
-  println("dToS =" + dToS(testList2))
-  println("map(+2)= "+ map(testList, (x:Int) => x + 2))
-  println("filter= " + filter(testList)((x: Int) => x < 3))
-  println("flatMap= "+flatMap(testList)((x: Int) => Cons(x + 1, Nil)))
-  
-
+  println("flatten= "                + flatten(List(testList, testListToBeAppended)))
+  println("addOne ="                 + addOne(testList))
+  println("dToS ="                   + dToS(testList2))
+  println("map(+2)= "                + map(testList, (x:Int) => x + 2))
+  println("filter= "                 + filter(testList)((x: Int) => x < 3))
+  println("flatMap= "                + flatMap(testList)((x: Int) => Cons(x + 1, Nil)))
+  println("filterViaFlatMap= "       + filterViaFlatMap(testList)((x: Int) => x < 4))
+  println("addEachElement= "         + addEachElement(testList, testListToBeAppended))
+  println("zipWith= "                + zipWith(testList, testListToBeAppended)((a,b) => a + b))
 }
