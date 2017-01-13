@@ -1,4 +1,4 @@
-package functional.programming.in.Scala.chapter2
+package functional.programming.in.scala.chapter2
 
 /**
  * Created by hierro on 9/27/15.

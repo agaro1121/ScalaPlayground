@@ -1,9 +1,10 @@
-package functional.programming.in.Scala
+package functional.programming.in.scala
 
 import java.time.LocalDate
 
-import functional.programming.in.Scala.chapter2.Chapter2
-import functional.programming.in.Scala.chapter2.Chapter2._
+import functional.programming.in.scala.chapter2.Chapter2
+import functional.programming.in.scala.chapter2.Chapter2._
+
 
 /**
  * Created by hierro on 9/27/15.

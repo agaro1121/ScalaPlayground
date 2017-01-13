@@ -1,5 +1,7 @@
 package functional.programming.in.scala.chapter3
 
+import scala.annotation.tailrec
+
 sealed trait Tree[+A] {
 
 /*
@@ -33,7 +35,16 @@ sealed trait Tree[+A] {
   /*
    3.27
   */
-  def depth: Int = ???
+  def depth: Int = {
+    def recurse(tree: Tree[A], count: Int = 0): Int = {
+      tree match {
+        case Leaf(_)      ⇒ count
+        case Branch(l, r) ⇒ recurse(l, count + 1).max(recurse(r, count + 1))
+      }
+    }
+
+    recurse(this)
+  }
 
 
 }

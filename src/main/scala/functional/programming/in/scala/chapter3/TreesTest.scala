@@ -1,6 +1,5 @@
-package functional.programming.in.Scala.chapter3
+package functional.programming.in.scala.chapter3
 
-import functional.programming.in.scala.chapter3.{Branch, Leaf}
 import org.scalatest.{Matchers, WordSpec}
 
 class TreesTest extends WordSpec with Matchers {
@@ -17,6 +16,22 @@ class TreesTest extends WordSpec with Matchers {
       val testTree =  Branch(Branch(Leaf(1), Leaf(5)), Leaf(3))
 
       testTree.maximum shouldBe 5
+    }
+
+    "maximum depth should be calculated correctly" in {
+      val testTree =
+        Branch(
+          Branch(
+            Leaf(1),
+            Branch(
+              Branch(Leaf(4), Leaf(5)),
+              Leaf(10)
+            )
+          ),
+          Leaf(3)
+        )
+
+      testTree.depth shouldBe 4
     }
   }
 

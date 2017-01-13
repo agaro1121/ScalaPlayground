@@ -1,4 +1,4 @@
-package functional.programming.in.Scala.chapter3
+package functional.programming.in.scala.chapter3
 
 import scala.annotation.tailrec
 
