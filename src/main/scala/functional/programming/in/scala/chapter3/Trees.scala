@@ -1,7 +1,5 @@
 package functional.programming.in.scala.chapter3
 
-import scala.annotation.tailrec
-
 sealed trait Tree[+A] {
 
 /*

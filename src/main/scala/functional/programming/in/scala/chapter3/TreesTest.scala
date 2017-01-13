@@ -20,11 +20,11 @@ class TreesTest extends WordSpec with Matchers {
 
     "maximum depth should be calculated correctly" in {
       val testTree =
-        Branch(
-          Branch(
+        Branch( //1
+          Branch( //2
             Leaf(1),
-            Branch(
-              Branch(Leaf(4), Leaf(5)),
+            Branch(//3
+              Branch(Leaf(4), Leaf(5)),//4
               Leaf(10)
             )
           ),
