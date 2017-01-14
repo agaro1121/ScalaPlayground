@@ -167,3 +167,14 @@ Temporary Items
 # Scala-IDE specific
 
 # ENSIME specific
+### Scala template
+
+# sbt specific
+
+# Scala-IDE specific
+
+# ENSIME specific
+### SBT template
+# Simple Build Tool
+# http://www.scala-sbt.org/release/docs/Getting-Started/Directories.html#configuring-version-control
+
