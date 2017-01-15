@@ -9,7 +9,7 @@ class OptionsTest extends WordSpec with Matchers {
     "implement sequence() correctly" in {
       val input = List(Some(1), Some(2), Some(3))
 
-      Option.sequence(input) shouldBe Some(List(1,2,3))
+      Option.sequence(input) shouldBe Some(List(1, 2, 3))
     }
 
     "implement sequence() with Nones correctly" in {
@@ -19,17 +19,17 @@ class OptionsTest extends WordSpec with Matchers {
     }
 
     "implement traverse() correctly" in {
-      val input = List(1,2,3)
+      val input = List(1, 2, 3)
 
-      Option.traverse[Int, Int](input)(a ⇒ Some(a + 1)) shouldBe Some(List(2,3,4))
+      Option.traverse[Int, Int](input)(a ⇒ Some(a + 1)) shouldBe Some(List(2, 3, 4))
     }
 
     "implement traverse() with Nones correctly" in {
-      val input = List(1,2,3)
+      val input = List(1, 2, 3)
 
       def Try[A](a: => A): Option[A] =
         try Some(a)
-        catch { case _:Exception => None }
+        catch { case _: Exception => None }
 
       Option.traverse[Int, Int](input)(a ⇒ Try(a / 0)) shouldBe None
     }
@@ -37,7 +37,7 @@ class OptionsTest extends WordSpec with Matchers {
     "implement sequenceViaTraverse() correctly" in {
       val input = List(Some(1), Some(2), Some(3))
 
-      Option.sequenceViaTraverse(input) shouldBe Some(List(1,2,3))
+      Option.sequenceViaTraverse(input) shouldBe Some(List(1, 2, 3))
     }
 
     "implement sequenceViaTraverse() with Nones correctly" in {
