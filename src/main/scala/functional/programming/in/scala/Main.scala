@@ -1,7 +1,5 @@
 package functional.programming.in.scala
 
-import java.time.LocalDate
-
 import functional.programming.in.scala.chapter2.Chapter2
 import functional.programming.in.scala.chapter2.Chapter2._
 

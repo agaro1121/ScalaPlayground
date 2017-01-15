@@ -44,7 +44,11 @@ object Option {
   /*
    4.4
   */
-  def sequence[A](a: List[Option[A]]): Option[List[A]] = ???
+  def sequence[A](a: List[Option[A]]): Option[List[A]] =
+    a match {
+      case Nil     ⇒ Some(Nil)
+      case x :: xs ⇒ x
+    }
 
 
 }

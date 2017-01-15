@@ -44,10 +44,10 @@ class TreesTest extends WordSpec with Matchers {
 
     "have a working fold function" in {
       val input = Branch(Branch(Leaf(1), Leaf(5)), Leaf(3))
-//      input.fold(0)(_ + _) shouldBe 9
+      input.fold(_ + 0)(_ + _) shouldBe 9
 
       val input2 = Branch(Branch(Leaf(1), Leaf(2)), Leaf(3))
-//      input2.fold(0)(_ + _) shouldBe 6
+      input2.fold(_ + 0)(_ + _) shouldBe 6
 
       val input3 =
         Branch( //1
@@ -60,7 +60,8 @@ class TreesTest extends WordSpec with Matchers {
           ),
           Leaf(3)
         )
-      Pending
+
+      input3.fold(_ + 0)(_ + _) shouldBe 23
     }
 
     "sizeWithFold() be the same as size" in {
@@ -87,7 +88,7 @@ class TreesTest extends WordSpec with Matchers {
           ),
           Leaf(3)
         )
-      Pending
+      testTree.depthWithFold shouldBe 4
     }
 
     "mapWithFold() be the same as map" in {
@@ -102,7 +103,17 @@ class TreesTest extends WordSpec with Matchers {
           ),
           Leaf(3)
         )
-      Pending
+
+      testTree.mapWithFold(_ + 1) shouldBe Branch( //1
+        Branch( //2
+          Leaf(2),
+          Branch( //3
+            Branch(Leaf(5), Leaf(6)), //4
+            Leaf(11)
+          )
+        ),
+        Leaf(4)
+      )
     }
 
   }
