@@ -45,10 +45,18 @@ object Option {
    4.4
   */
   def sequence[A](a: List[Option[A]]): Option[List[A]] =
-    a match {
-      case Nil     ⇒ Some(Nil)
-      case x :: xs ⇒ x
-    }
+    /*a match {
+      case Nil          ⇒ Some(Nil)
+      case head :: tail ⇒ head.flatMap(headValue ⇒ sequence(tail).map(headValue :: _))
+    }*/
+  a.foldRight(Some(Nil): Option[List[A]])((elem, acc) ⇒ elem.flatMap(a ⇒ acc.map(listA ⇒ a :: listA)))
+
+
+  def traverse[A, B](a: List[A])(f: A => Option[B]): Option[List[B]] =
+    a.foldRight(Some(Nil): Option[List[B]])((elem, acc) ⇒ f(elem).flatMap(a ⇒ acc.map(listA ⇒ a :: listA)))
+
+  def sequenceViaTraverse[A](a: List[Option[A]]): Option[List[A]] =
+    traverse(a)(a ⇒ a)
 
 
 }
