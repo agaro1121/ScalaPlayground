@@ -1,7 +1,5 @@
 package functional.programming.in.scala.chapter5
 
-import scala.annotation.tailrec
-
 sealed trait Stream[+A] {
   import Stream._
 
@@ -132,7 +130,16 @@ object Stream {
   /*
   * 5.10
   * */
-  def fibs: Stream[Int] = ???
+  def fibs: Stream[Int] = {
+
+    def inner(n: Int, nextN: Int): Stream[Int] =
+      cons(n, inner(nextN, n + nextN))
+
+
+    inner(0, 1)
+  }
+
+
 
 }
 

@@ -99,6 +99,14 @@ class StreamsTest extends WordSpec with Matchers {
       input.take(10).toList shouldBe List(5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
     }
 
+    "implement fibs correctly" in {
+      val input = Stream.fibs
+
+      input.take(3).toList shouldBe List(0, 1, 1)
+      input.take(4).toList shouldBe List(0, 1, 1, 2)
+      input.take(5).toList shouldBe List(0, 1, 1, 2, 3)
+    }
+
   }
 
 }
