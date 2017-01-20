@@ -70,7 +70,37 @@ sealed trait Stream[+A] {
   * 5.5
   * */
   def takeWhileViaFoldRight(f: A ⇒ Boolean): Stream[A] =
-    foldRight(empty: Stream[A])((elem, acc) ⇒ if(f(elem)) cons(elem, acc.takeWhileViaFoldRight(f)) else empty)
+    foldRight(empty: Stream[A])((elem, acc) ⇒ if (f(elem)) cons(elem, acc.takeWhileViaFoldRight(f)) else empty)
+
+  /*
+  * 5.6
+  * */
+  def headOptionViaFoldRight: Option[A] =
+    foldRight(None: Option[A])((h, _) ⇒ Some(h))
+
+  /*
+  * 5.7
+  * */
+  def map[B](f: ⇒ A ⇒ B): Stream[B] =
+    foldRight(empty: Stream[B])((elem, acc) ⇒ cons(f(elem), acc))
+
+  def filter(p: ⇒ A ⇒ Boolean): Stream[A] =
+    foldRight(empty: Stream[A])(
+      (elem, acc) ⇒
+        if (p(elem))
+          cons(elem, acc)
+        else
+          acc
+    )
+
+  def append[B >: A](s: ⇒ Stream[B]): Stream[B] =
+    foldRight(s)((elem, acc) ⇒ cons(elem, acc))
+
+  def flatMap[B](f: ⇒ A ⇒ Stream[B]): Stream[B] =
+    foldRight(empty: Stream[B])((elem, acc) ⇒ f(elem).append(acc))
+
+  def find(p: A => Boolean): Option[A] = filter(p).headOption
+
 
 }
 case object Empty extends Stream[Nothing]
@@ -88,5 +118,21 @@ object Stream {
 
   def apply[A](as: A*): Stream[A] =
     if (as.isEmpty) empty else cons(as.head, apply(as.tail: _*))
+
+  /*
+   * 5.8
+   * */
+  def constant[A](a: A): Stream[A] = cons(a, constant(a))
+
+  /*
+  * 5.9
+  * */
+  def from(n: Int): Stream[Int] = cons(n, from(n + 1))
+
+  /*
+  * 5.10
+  * */
+  def fibs: Stream[Int] = ???
+
 }
 
