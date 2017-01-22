@@ -107,6 +107,24 @@ class StreamsTest extends WordSpec with Matchers {
       input.take(5).toList shouldBe List(0, 1, 1, 2, 3)
     }
 
+    "implement unfold correctly" in {
+      val input = Stream.unfold(0)(s ⇒ Some(s, s + 1))
+
+      input.take(3).toList shouldBe List(0, 1, 2)
+      input.take(4).toList shouldBe List(0, 1, 2, 3)
+      input.take(5).toList shouldBe List(0, 1, 2, 3, 4)
+    }
+
+    "implement fibsViaUnfold() correctly" in {
+      val input = Stream.fibsViaUnfold
+
+      input.take(3).toList shouldBe List(0, 1, 1)
+      input.take(4).toList shouldBe List(0, 1, 1, 2)
+      input.take(5).toList shouldBe List(0, 1, 1, 2, 3)
+    }
+
+
+
   }
 
 }

@@ -25,3 +25,7 @@ invar(new InVar[Java])
 contravar(new ContraVar[Java]) //Same clsss allowed
 //contravar(new ContraVar[Scala]) //not allowed cuz it's a subtype
 contravar(new ContraVar[CPP]) //allowed because contra means supertypes
+
+
+val x = 5
+println("id="+identity(x))
