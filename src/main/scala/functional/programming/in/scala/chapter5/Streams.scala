@@ -99,6 +99,23 @@ sealed trait Stream[+A] {
 
   def find(p: A => Boolean): Option[A] = filter(p).headOption
 
+  /*
+  * 5.13
+  * map, take, takeWhile, zipWith, zipAll(in trait)
+  * */
+  def mapViaUnfold[B](f: ⇒A ⇒ B): Stream[B] =
+    unfold(this){
+      case Cons(h, t) ⇒ Some( (f(h()), t()) )
+      case _ ⇒ None
+    }
+
+  def takeViaUnfold(n: Int): Stream[A] = ???
+
+  def takeWhileViaUnfold(f: A ⇒ Boolean): Stream[A] = ???
+
+  def zipWith[B >: A](b: Stream[B])(f: (B,B) => B): Stream[B] = ???
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
 
 }
 case object Empty extends Stream[Nothing]
@@ -135,21 +152,34 @@ object Stream {
     def inner(n: Int, nextN: Int): Stream[Int] =
       cons(n, inner(nextN, n + nextN))
 
-
     inner(0, 1)
   }
 
+  /*
+  * 5.11
+  * */
   def unfold[A, S](z: S)(f: S => Option[(A, S)]): Stream[A] =
     f(z) match {
       case Some((h, s)) => cons(h, unfold(s)(f))
       case None => empty
     }
 
+  /*
+  * 5.12
+  * Write fibs, from, constant, and ones in terms of unfold
+  * */
   def fibsViaUnfold: Stream[Int] =
-    unfold((0,1)){
-      case (n, nextN) ⇒ Some((n , (nextN, nextN + n)))
+    unfold((0, 1)) {
+      case (n, nextN) ⇒ Some((n, (nextN, nextN + n)))
     }
 
+  def fromViaUnfold(n: Int): Stream[Int] = unfold(n)(s ⇒ Some(s, s + 1))
+
+  def constantViaUnfold[A](a: A): Stream[A] = unfold(a)(s ⇒ Some(s, s))
+
+  val ones: Stream[Int] = Stream.cons(1, ones)
+
+  val onesViaUnfold: Stream[Int] = unfold(1)(s ⇒ Some(s,s))
 
 
 

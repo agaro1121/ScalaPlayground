@@ -123,7 +123,42 @@ class StreamsTest extends WordSpec with Matchers {
       input.take(5).toList shouldBe List(0, 1, 1, 2, 3)
     }
 
+    "implement fromViaUnfold() correctly" in {
+      val input = Stream.fromViaUnfold(5)
 
+      input.take(1).toList shouldBe List(5)
+      input.take(2).toList shouldBe List(5, 6)
+      input.take(3).toList shouldBe List(5, 6, 7)
+      input.take(4).toList shouldBe List(5, 6, 7, 8)
+      input.take(10).toList shouldBe List(5, 6, 7, 8, 9, 10, 11, 12, 13, 14)
+    }
+
+    "implement constantViaUnfold() correctly" in {
+      val input = Stream.constantViaUnfold(1)
+
+      input.take(1).toList shouldBe List(1)
+      input.take(2).toList shouldBe List(1, 1)
+      input.take(3).toList shouldBe List(1, 1, 1)
+      input.take(4).toList shouldBe List(1, 1, 1, 1)
+      input.take(10).toList shouldBe List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    }
+
+    "implement onesViaUnfold() correctly" in {
+      val input = Stream.onesViaUnfold
+
+      input.take(1).toList shouldBe List(1)
+      input.take(2).toList shouldBe List(1, 1)
+      input.take(3).toList shouldBe List(1, 1, 1)
+      input.take(4).toList shouldBe List(1, 1, 1, 1)
+      input.take(10).toList shouldBe List(1, 1, 1, 1, 1, 1, 1, 1, 1, 1)
+    }
+
+    "implement mapViaUnfold() correctly" in {
+      val input = Stream(1, 2, 3, 4, 5)
+
+      val output = input.mapViaUnfold(_ + 1).toList
+      output shouldBe List(2, 3, 4, 5, 6)
+    }
 
   }
 
