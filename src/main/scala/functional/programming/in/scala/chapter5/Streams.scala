@@ -109,9 +109,18 @@ sealed trait Stream[+A] {
       case _ ⇒ None
     }
 
-  def takeViaUnfold(n: Int): Stream[A] = ???
+  def takeViaUnfold(n: Int): Stream[A] =
+    unfold(this){
+      case Cons(h, t) if n > 1 ⇒ Some(h(), t().takeViaUnfold(n - 1))
+      case Cons(h, _) if n == 1 ⇒ Some(h(), empty) //handle n==1 to avoid looking at the tail
+      case _ ⇒ None
+    }
 
-  def takeWhileViaUnfold(f: A ⇒ Boolean): Stream[A] = ???
+  def takeWhileViaUnfold(f: A ⇒ Boolean): Stream[A] =
+    unfold(this){
+      case Cons(h, t) if f(h()) ⇒ Some(h(), t().takeWhileViaUnfold(f))
+      case _ ⇒ None
+    }
 
   def zipWith[B >: A](b: Stream[B])(f: (B,B) => B): Stream[B] = ???
 

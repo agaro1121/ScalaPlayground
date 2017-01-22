@@ -160,6 +160,19 @@ class StreamsTest extends WordSpec with Matchers {
       output shouldBe List(2, 3, 4, 5, 6)
     }
 
+    "implement takeViaUnfold(n) correctly" in {
+      val input = Stream(1, 2, 3, 4, 5)
+
+      input.takeViaUnfold(3).toList shouldBe List(1, 2, 3)
+    }
+
+    "implement takeWhileViaUnfold(p) correctly" in {
+      val input = Stream(1, 2, 3, 4, 5)
+
+      val output = input.takeWhileViaUnfold(_ < 4).toList
+      output shouldBe List(1, 2, 3)
+    }
+
   }
 
 }
