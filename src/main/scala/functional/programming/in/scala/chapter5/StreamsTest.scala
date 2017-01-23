@@ -173,6 +173,26 @@ class StreamsTest extends WordSpec with Matchers {
       output shouldBe List(1, 2, 3)
     }
 
+    "implement zipWith correctly" in {
+      val input: Stream[Int] = Stream(1, 2, 3)
+      val input2: Stream[Int] = Stream(4, 5, 6)
+
+      input.zipWith(input2)(_ + _).toList shouldBe List(5, 7, 9)
+    }
+
+    "implement zipAll correctly" in {
+      val input: Stream[Int] = Stream(1, 2, 3)
+      val input2: Stream[Int] = Stream(4, 5, 6, 7)
+
+      input.zipAll(input2).toList shouldBe
+        List(
+          ( Some(1), Some(4) ),
+          ( Some(2), Some(5) ),
+          ( Some(3), Some(6) ),
+          ( None   , Some(7) )
+        )
+    }
+
   }
 
 }
