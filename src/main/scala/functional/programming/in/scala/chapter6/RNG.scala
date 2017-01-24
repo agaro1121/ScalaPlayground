@@ -1,8 +1,60 @@
 package functional.programming.in.scala.chapter6
 
 trait RNG {
+  import RNG._
+
   def nextInt: (Int, RNG)
+  type Rand[+A] = RNG => (A, RNG)
+
+  val int: Rand[Int] = _.nextInt
+
+  def unit[A](a: A): Rand[A] =
+    rng ⇒ (a, rng)
+
+  def map[A,B](s: Rand[A])(f: A => B): Rand[B] = rng => {
+    val (a, rng2) = s(rng)
+    (f(a), rng2)
+  }
+
+  def nonNegativeEven: Rand[Int] = map(nonNegativeInt)(i => i - i % 2)
+
+  /*
+  * 6.5
+  * */
+  def double: Rand[Double] = map(nonNegativeInt)(n ⇒ 1/n.toDouble)
+
+  /*
+  * 6.6
+  * */
+  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] =
+    rng ⇒ {
+      val(n, rng2) = ra(rng)
+      val(n2, rng3) = rb(rng2)
+
+      (f(n,n2), rng3)
+    }
+
+  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((_, _))
+
+  val randIntDouble: Rand[(Int, Double)] = both(int, double)
+  val randDoubleInt: Rand[(Double, Int)] = both(double, int)
+
+  /*
+  * 6.7
+  * */
+  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] =
+    fs.foldRight(unit(Nil: List[A]))((rng, b) ⇒ map2(rng, b)(_::_))
+
+  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+    //could replace the second param with with a call to `int`
+    val list: List[Rand[Int]] = List.fill(count){ rng ⇒ rng.nextInt }
+
+    sequence(list)(rng)
+  }
+
+
 }
+
 object RNG {
 
   /*
@@ -60,7 +112,6 @@ object RNG {
 
     loop(count, (Nil, rng))
   }
-
 
 }
 
