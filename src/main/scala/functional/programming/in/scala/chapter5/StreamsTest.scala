@@ -186,11 +186,35 @@ class StreamsTest extends WordSpec with Matchers {
 
       input.zipAll(input2).toList shouldBe
         List(
-          ( Some(1), Some(4) ),
-          ( Some(2), Some(5) ),
-          ( Some(3), Some(6) ),
-          ( None   , Some(7) )
+          (Some(1), Some(4)),
+          (Some(2), Some(5)),
+          (Some(3), Some(6)),
+          (None, Some(7))
         )
+    }
+
+    "implement startsWith correctly" in {
+      val input: Stream[Int] = Stream(1, 2, 3)
+      val input2: Stream[Int] = Stream(1, 2)
+      val input3: Stream[Int] = Stream(1, 3)
+
+      input.startsWith(input2) shouldBe true
+      input.startsWith(input3) shouldBe false
+    }
+
+    "implement tails correctly" in {
+      val input: Stream[Int] = Stream(1, 2, 3)
+
+      val actual = input.tails.toList.map(_.toList)
+      actual shouldBe
+        List(List(1, 2, 3), List(2, 3), List(3), Nil)
+    }
+
+    "implement scanRight correctly" in {
+      val input: Stream[Int] = Stream(1, 2, 3)
+
+      val actual = input.scanRight(0)(_ + _).toList
+      actual shouldBe List(6, 5, 3)
     }
 
   }
