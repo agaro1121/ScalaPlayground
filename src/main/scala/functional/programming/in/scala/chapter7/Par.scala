@@ -91,5 +91,59 @@ object Par {
   //does computation when needed in main thread
   def delay[A](fa: => Par[A]): Par[A] = es => fa(es)
 
+  def choice[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    es =>
+      if (run(cond)(es).get) t(es) else f(es)
+
+  /*
+  * 7.11
+  * */
+  def choiceN[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
+    es ⇒ choices(run(n)(es).get())(es)
+
+  def choiceViaChoiceN[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    choiceN
+    {
+      es ⇒
+        if (run(cond)(es).get) unit(0)(es) else unit(1)(es)
+//      map(cond)(res ⇒ if(res) 0 else 1) //could also simply be this
+    }(List(t, f))
+
+  /*
+  * 7.12
+  * */
+  def choiceMap[K,V](key: Par[K])(choices: Map[K,Par[V]]): Par[V] =
+    es ⇒ choices(run(key)(es).get())(es)
+
+  /*
+  * 7.13
+  * */
+  def chooser[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+    es ⇒ choices(run(pa)(es).get())(es)
+
+  def flatMap[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] = chooser(pa)(choices)
+
+  def choiceViaChooser[A](cond: Par[Boolean])(t: Par[A], f: Par[A]): Par[A] =
+    flatMap(cond)(bool ⇒ if (bool) t else f)
+
+  def choiceNViaChooser[A](n: Par[Int])(choices: List[Par[A]]): Par[A] =
+    flatMap(n)(n ⇒ choices(n))
+
+  /*
+  * 7.14
+  * */
+  def join[A](a: Par[Par[A]]): Par[A] =
+    es ⇒ run(a)(es).get()(es)
+
+  def flatMapViaJoin[A,B](pa: Par[A])(choices: A => Par[B]): Par[B] =
+    join(map(pa)(choices))
+
+  def joinViaFlatMap[A](a: Par[Par[A]]): Par[A] =
+    flatMap(a)(a ⇒ a)
+
+  def map2ViaFlatMapAndUnit[A, B, C](pa: Par[A], pb: Par[B])(f: (A, B) ⇒ C): Par[C] =
+    flatMap(pa)(a ⇒ map2(unit(a), pb)(f))
+
+
 }
 
