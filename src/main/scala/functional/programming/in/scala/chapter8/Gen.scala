@@ -16,6 +16,9 @@ trait Prop {
   }
 
   def check: Either[(FailedCase, SuccessCount), SuccessCount]
+
+  type TestCases = Int
+  type Result = Either[(FailedCase, SuccessCount), SuccessCount]
 }
 
 object Prop {
@@ -23,18 +26,22 @@ object Prop {
   type FailedCase = String
 }
 
+//case class Prop(run: TestCases ⇒ Result)
+
 trait Gen[A] {
 
   def listOf[A](a: Gen[A]): Gen[List[A]]
   def listOfN[A](n: Int, a: Gen[A]): Gen[List[A]]
   def forAll[A](a: Gen[A])(f: A => Boolean): Prop
-
 }
 
 object Gen {
 
   case class Gen[A](sample: State[RNG, A]) {
 
+    /*
+    * 8.6
+    * */
     def flatMap[B](f: A => Gen[B]): Gen[B] = {
       Gen(sample.flatMap(a ⇒ f(a).sample))
     }
@@ -86,5 +93,6 @@ object Gen {
     Gen(State(RNG.double).flatMap(d =>
       if (d < g1Threshold) g1._1.sample else g2._1.sample))
   }
+
 
 }
