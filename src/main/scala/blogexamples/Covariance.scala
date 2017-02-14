@@ -19,8 +19,8 @@ object Tester extends App {
   new AcceptsAnythingAbovePrimeape[Animal]{}
   new AcceptsAnythingBelowCaveman[Human]{}
 
-//  new AcceptsAnythingAbovePrimeape[Human]{} //fails - throws exception
-//  new AcceptsAnythingBelowCaveman[Animal]{} //fails - throws exception
+  new AcceptsAnythingAbovePrimeape[Human]{} //fails - throws exception
+  new AcceptsAnythingBelowCaveman[Animal]{} //fails - throws exception
 
 }
 
