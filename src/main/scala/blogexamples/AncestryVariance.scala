@@ -1,87 +1,61 @@
 package blogexamples
 
-trait Grandparent                     { override def toString = "Grandparent" }
-trait Parent      extends Grandparent { override def toString = "Parent" }
-trait Child       extends Parent      { override def toString = "Child" }
+trait Grandparent { override def toString: String = "Grandparent" }
+trait Parent extends Grandparent { override def toString: String = "Parent" }
+trait Child extends Parent { override def toString: String = "Child" }
 
-// CoVariance
-trait AcceptsAnyTypeAOrBelow[+A] {
-  def printType[B >: A](value: B): Unit = println(identity(value))
-}
-
-// ContraVariance
-trait AcceptsAnyTypeAOrAbove[-A] {
-  def printType(value: A): Unit = println(identity(value))
-}
-
-object Methods {
-
-  val grandparent = new Grandparent {}
-  val parent = new Parent {}
-  val child = new Child {}
-
-  def invariance(value: Parent): Unit = {
-    println("only accepts parent and it's subtypes = "+value)
-  }
-
-  def covariance[T <: Parent](value: T): Unit = {
-    println("only accepts parent and child = "+ identity(value))
-  }
-
-  def contravariance[T >: Parent](value: T): Unit = {
-    println("only accepts parent and grandparent = "+value)
-  }
-
-}
-
-object CovariantMethodsTester extends App {
-
-  import Methods._
-
-/*
-  invariance(grandparent)
-  compile error - grandparent is NOT a parent
-  BUT parent is a grandparent, just for completion
- */
-//  invariance(parent) //parent is a parent
-//  invariance(child) //child is a parent
-
-  /*
-   *   exception at compile time
-   * */
-//covariance(grandparent)
-  covariance(parent)
-  covariance(child)
-}
-
-object CovariantTraitTester extends App {
-  val covariantParentValidator = new AcceptsAnyTypeAOrBelow[Parent] {}
-
-  val grandparent = new Grandparent {}
-  val parent = new Parent {}
-  val child = new Child {}
+trait ParentAndBelow[+A] { override def toString: String = "ParentAndBelow" }
+trait ParentAndAbove[-A] { override def toString: String = "ParentAndAbove" }
+trait ParentOnly[A] { override def toString: String = "ParentOnly" }
 
 
-  /*
-   *  errors during compilation
-   * */
-//  covariantParentValidator.printType(grandparent)
-  covariantParentValidator.printType(parent)
-  covariantParentValidator.printType(child)
-}
-
-
-
-object ContravariantTraitTester extends App {
-  val contravariantValidator = new AcceptsAnyTypeAOrAbove[Parent] {}
+object ContraVarianceTraitTester extends App {
 
   val grandparent: Grandparent = new Grandparent {}
   val parent: Parent = new Parent {}
   val child: Child = new Child {}
 
+  def tester(x: ParentAndAbove[Parent]): Unit = println(identity(x))
 
-//  contravariantValidator.printType(grandparent)
-  contravariantValidator.printType(parent)
-  contravariantValidator.printType(child)
+  val v = new ParentAndAbove[Grandparent] {}
+  val v2 = new ParentAndAbove[Parent] {}
+  val v3 = new ParentAndAbove[Child] {}
 
+  tester(v)
+  tester(v2)
+  //  tester(v3) //compile error
+}
+
+object CoVarianceTraitTester extends App {
+
+  val grandparent: Grandparent = new Grandparent {}
+  val parent: Parent = new Parent {}
+  val child: Child = new Child {}
+
+  def tester(x: ParentAndBelow[Parent]): Unit = println(identity(x))
+
+  val v = new ParentAndBelow[Grandparent] {}
+  val v2 = new ParentAndBelow[Parent] {}
+  val v3 = new ParentAndBelow[Child] {}
+
+  //  tester(v) //compile error
+  tester(v2)
+  tester(v3)
+}
+
+object InVarianceTraitTester extends App {
+
+  val grandparent: Grandparent = new Grandparent {}
+  val parent: Parent = new Parent {}
+  val child: Child = new Child {}
+
+  def tester(x: ParentOnly[Parent]): Unit = println(identity(x))
+
+  val v = new ParentOnly[Grandparent] {}
+  val v2 = new ParentOnly[Parent] {}
+  val v3 = new ParentOnly[Child] {}
+
+  //  tester(v) //compile error
+  tester(v2)
+  //  tester(v3) //compile error
 }
