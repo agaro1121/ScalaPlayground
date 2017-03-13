@@ -73,7 +73,6 @@ object Foldable {
     override def foldMap[A, B](as: Option[A])(f: (A) => B)(mb: Monoid[B]): B = concatenate(as.map(f))(mb)
   }
 
-
 }
 
 sealed trait WC
@@ -165,10 +164,13 @@ object Monoid {
   /*
   * 10.7
   * */
-  def foldMapV[A, B](v: IndexedSeq[A], m: Monoid[B])(f: A => B): B = {
-    val (left, right) = v.splitAt(v.length / 2)
-    m.op(foldMapV(left, m)(f), foldMapV(right, m)(f))
-  }
+  def foldMapV[A, B](as: IndexedSeq[A], m: Monoid[B])(f: A => B): B =
+    if (as.isEmpty) m.zero
+    else if (as.length == 1) f(as(0))
+    else {
+      val (l, r) = as.splitAt(as.length / 2)
+      m.op(foldMapV(l, m)(f), foldMapV(r, m)(f))
+    }
 
   /*
   * 10.8
@@ -212,5 +214,48 @@ object Monoid {
     }
   }
 
+  /*
+  * 10.16
+  * */
+  def productMonoid[A, B](A: Monoid[A], B: Monoid[B]): Monoid[(A, B)] = new Monoid[(A, B)] {
+    override def op(a1: (A, B), a2: (A, B)): (A, B) = (A.op(a1._1, a2._1), B.op(a1._2, a2._2))
+    override def zero: (A, B) = (A.zero, B.zero)
+  }
+
+  def mapMergeMonoid[K, V](V: Monoid[V]): Monoid[Map[K, V]] = new Monoid[Map[K, V]] {
+    def zero = Map[K, V]()
+    def op(a: Map[K, V], b: Map[K, V]) =
+      (a.keySet ++ b.keySet).foldLeft(zero) { (acc, k) =>
+        acc.updated(k, V.op(
+          a.getOrElse(k, V.zero),
+          b.getOrElse(k, V.zero)
+        ))
+      }
+  }
+
+  /*
+  * 10.17
+  * */
+  def functionMonoid[A, B](B: Monoid[B]): Monoid[A => B] = new Monoid[(A) => B] {
+    override def op(a1: (A) => B, a2: (A) => B): (A) => B = (a: A) => B.op(a1(a), a2(a))
+    override def zero: (A) => B = (_: A) => B.zero
+  }
+
+  /*
+  * 10.18
+  * */
+  def bag[A](as: IndexedSeq[A]): Map[A, Int] = {
+    foldMapV(as, mapMergeMonoid[A, Int](intAddition)) {
+      a =>
+        Map(a -> 1)
+    }
+  }
+
+}
+
+object Main extends App {
+  import Monoid._
+
+  println(bag(Vector("a", "rose", "is", "a", "rose")))
 }
 
