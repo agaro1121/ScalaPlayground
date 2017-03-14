@@ -1,6 +1,9 @@
 package functional.programming.in.scala.chapter11
 
-import scala.language.higherKinds
+import functional.programming.in.scala.chapter11.State.IntState
+import functional.programming.in.scala.chapter6.{RNG, SimpleRNG}
+
+import scala.language.{higherKinds, reflectiveCalls}
 
 trait Monad[M[_]] {
   def unit[A](value: A): M[A]
@@ -48,6 +51,35 @@ trait Monad[M[_]] {
       (a, lmb) =>
         map2(f(a), lmb)((b, as) => if (b) a :: as else as)
     }
+
+  /*
+  * 11.7
+  * */
+  def compose[A, B, C](f: A => M[B], g: B => M[C]): A => M[C] =
+    (a: A) => flatMap(f(a))(g)
+
+  /*
+  * 11.8
+  * */
+  def flatMapViaCompose[A, B](ma: M[A])(f: A => M[B]): M[B] =
+    compose[Unit, A, B]((_: Unit) => ma, f)()
+
+  /*
+  * 11.12
+  * */
+  def join[A](mma: M[M[A]]): M[A] =
+    flatMap(mma)(ma => ma)
+
+  /*
+  * 11.13
+  * */
+  def flatMapViaJoin[A, B](ma: M[A])(f: A => M[B]): M[B] = {
+    join(map(ma)(f))
+  }
+
+  def composeViaJoin[A, B, C](f: A => M[B], g: B => M[C]): A => M[C] =
+    (a: A) => join(map(f(a))(g))
+
 }
 
 object Monad {
@@ -70,4 +102,61 @@ object Monad {
     override def flatMap[A, B](ma: List[A])(f: (A) => List[B]): List[B] = ma flatMap f
   }
 
+  /*
+  * 11.17
+  * */
+  val idMonad = new Monad[Id] {
+    override def unit[A](value: A): Id[A] = Id(value)
+    override def flatMap[A, B](ma: Id[A])(f: (A) => Id[B]): Id[B] = ma flatMap f
+  }
+
+  val intStateMonad = new Monad[IntState] {
+    def unit[A](a: A): IntState[A] = State(s => (a, s))
+    def flatMap[A, B](st: IntState[A])(f: A => IntState[B]): IntState[B] = st flatMap f
+  }
+
+  def stateMonad[S] = new Monad[({ type f[x] = State[S, x] })#f] {
+    def unit[A](a: A): State[S, A] = State(s => (a, s))
+    def flatMap[A, B](st: State[S, A])(f: A => State[S, B]): State[S, B] = st flatMap f
+  }
+
 }
+
+/*
+* 11.17
+* */
+case class Id[A](value: A) {
+  def map[B](f: A => B): Id[B] = Id(f(value))
+  def flatMap[B](f: A => Id[B]): Id[B] = f(value)
+}
+
+/*
+* 11.20
+* */
+case class Reader[R, A](run: R => A)
+object Reader {
+  def readerMonad[R] = new Monad[({ type f[x] = Reader[R, x] })#f] {
+    def unit[A](a: A): Reader[R, A] = Reader(r => a)
+    def flatMap[A, B](st: Reader[R, A])(f: A => Reader[R, B]): Reader[R, B] = join(map(st)(f))
+  }
+}
+
+object Main extends App {
+  import Monad._
+
+  println(listMonad.compose[Int, Int, String](a => List(a + 1), b => List("String=" + b.toString))(5))
+
+  println(listMonad.compose[Int, Int, Int](a => List(a), listMonad.unit)(5))
+  println(listMonad.compose[Int, Int, Int](listMonad.unit, a => List(a))(5))
+
+  import functional.programming.in.scala.chapter6.RNG._
+
+  private val negativeInt: (RNG) => (Int, RNG) = nonNegativeInt
+  private val state: State[RNG, Int] = State[RNG, Int](negativeInt)
+
+  println(stateMonad.replicateM(2, state).run(SimpleRNG(3L)))
+  println("sequence = " + stateMonad.sequence(List.fill(2)(state)).run(SimpleRNG(3L)))
+  println(stateMonad.sequence(List.fill(2)(state)).run(SimpleRNG(3L)))
+
+}
+
