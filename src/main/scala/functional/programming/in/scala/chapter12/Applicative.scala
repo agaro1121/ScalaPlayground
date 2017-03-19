@@ -56,6 +56,30 @@ trait Applicative[F[_]] extends Functor[F] {
     //    apply[D,E](map3(fa,fb,fc)((a,b,c) => f.curried(a)(b)(c)))(fd)
     apply(apply(apply(apply(unit(f.curried))(fa))(fb))(fc))(fd)
 
+  /*
+  * 12.8
+  * */
+  def product[G[_]](G: Applicative[G]): Applicative[({ type f[x] = (F[x], G[x]) })#f] = {
+    val self = this
+    new Applicative[({ type f[x] = (F[x], G[x]) })#f] {
+      def unit[A](a: => A) = (self.unit(a), G.unit(a))
+      override def apply[A, B](fs: (F[A => B], G[A => B]))(p: (F[A], G[A])) =
+        (self.apply(fs._1)(p._1), G.apply(fs._2)(p._2))
+    }
+  }
+
+  /*
+  * 12.9
+  * */
+  def compose[G[_]](G: Applicative[G]): Applicative[({ type f[x] = F[G[x]] })#f] = {
+    val self = this
+    new Applicative[({ type f[x] = F[G[x]] })#f] {
+      override def unit[A](a: => A) = self.unit(G.unit(a))
+      override def map2[A, B, C](fa: F[G[A]], fb: F[G[B]])(f: (A, B) => C): F[G[C]] =
+        self.map2(fa, fb)(G.map2(_, _)(f))
+    }
+  }
+
 }
 
 object Applicative {
@@ -71,6 +95,9 @@ object Applicative {
 
   import functional.programming.in.scala.chapter11._, Monad._
 
+  /*
+  * 12.5
+  * */
   def eitherMonad[E]: Monad[({ type f[x] = Either[E, x] })#f] = new Monad[({ type f[x] = Either[E, x] })#f] {
 
     override def flatMap[A, B](ma: Either[E, A])(f: A ⇒ Either[E, B]): Either[E, B] = {
@@ -83,6 +110,9 @@ object Applicative {
     override def unit[A](value: A) = Right(value)
   }
 
+  /*
+  * 12.6
+  * */
   def validationApplicative[E]: Applicative[({ type f[x] = Validation[E, x] })#f] =
     new Applicative[({ type f[x] = Validation[E, x] })#f] {
       override def unit[A](a: ⇒ A): Validation[Nothing, A] = Success(a)
