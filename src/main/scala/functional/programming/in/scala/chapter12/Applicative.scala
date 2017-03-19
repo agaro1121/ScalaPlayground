@@ -3,6 +3,7 @@ package functional.programming.in.scala.chapter12
 import free.Functor
 
 import scala.language.higherKinds
+import scala.language.reflectiveCalls
 import scala.util.Either.RightProjection
 
 trait Applicative[F[_]] extends Functor[F] {
@@ -82,4 +83,23 @@ object Applicative {
     override def unit[A](value: A) = Right(value)
   }
 
+  def validationApplicative[E]: Applicative[({ type f[x] = Validation[E, x] })#f] =
+    new Applicative[({ type f[x] = Validation[E, x] })#f] {
+      override def unit[A](a: ⇒ A): Validation[Nothing, A] = Success(a)
+
+      override def map2[A, B, C](fa: Validation[E, A], fb: Validation[E, B])(f: (A, B) ⇒ C): Validation[E, C] = {
+        (fa, fb) match {
+          case (Success(v), Success(v2)) ⇒ Success(f(v, v2))
+          case (Failure(h, t), Failure(h2, t2)) ⇒ Failure(h, (t :+ h2) ++ t2)
+          case (_, f @ Failure(_, _)) ⇒ f
+          case (f @ Failure(_, _), _) ⇒ f
+        }
+      }
+    }
+
 }
+
+sealed trait Validation[+E, +A]
+case class Failure[E](head: E, tail: Vector[E] = Vector())
+  extends Validation[E, Nothing]
+case class Success[A](a: A) extends Validation[Nothing, A]
