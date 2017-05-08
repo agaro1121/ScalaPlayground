@@ -1,5 +1,7 @@
 package blogexamples
 
+import scala.language.{higherKinds, implicitConversions}
+
 trait Functor[F[_]] {
   def map[A, B](fa: F[A])(f: A => B): F[B]
 }
@@ -8,7 +10,7 @@ object Functor {
   case class FunctorOps[F[_], A](fa: F[A]) {
     def map[B](f: A => B)(implicit functor: Functor[F]): F[B] = functor.map(fa)(f)
   }
-  implicit def toFunctorOps[F[_], A](fa: F[A]) = FunctorOps(fa)
+  implicit def toFunctorOps[F[_], A](fa: F[A]): FunctorOps[F, A] = FunctorOps(fa)
 }
 
 sealed trait Tree[A]
@@ -40,5 +42,13 @@ object FunctorTester extends App {
 
   println(tree.map(_ + 1))
   println(tree.map(n => s"n=$n"))
+
+
+  val f: Int => Int = i => i + 1
+  val g: Int => Int = i => i - 1
+
+  // laws
+  println(tree.map(x => x))
+  println(tree.map(f).map(g) == tree.map(f.andThen(g)))
 
 }
