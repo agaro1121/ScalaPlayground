@@ -2,10 +2,10 @@ package blogexamples
 
 import cats.laws.FunctorLaws
 import cats.laws.discipline.FunctorTests
-import org.scalacheck.Gen
-import org.scalacheck._
-import Gen._
-import Arbitrary.arbitrary
+import org.scalacheck.Gen, Gen.oneOf
+import org.scalacheck.Arbitrary, Arbitrary.arbitrary
+import cats.implicits.toFunctorOps
+
 
 object CatsFunctor extends App {
 
@@ -43,7 +43,11 @@ object CatsFunctor extends App {
 
   val rs = FunctorTests[Tree].functor[Int, Int, Int]
 
-  rs.all.check()
+  val tree: Tree[Int] = Branch(Branch(Leaf(4), Branch(Leaf(5), Leaf(6))),Leaf(8))
 
+
+//  rs.all.check()
+
+  println(tree.map(_ + 1))
 
 }
