@@ -2,7 +2,7 @@ package blogexamples
 
 import scala.language.{higherKinds, implicitConversions}
 
-trait Functor[F[_]] {
+trait Functor[F[_]] { //
   def map[A, B](fa: F[A])(f: A => B): F[B]
 }
 

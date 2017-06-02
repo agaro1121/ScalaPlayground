@@ -4,11 +4,11 @@ import cats.laws.MonadLaws
 import cats.laws.discipline.MonadTests
 import cats.implicits._
 import org.scalacheck.Arbitrary.arbitrary
-import org.scalacheck.Gen.oneOf
+import org.scalacheck.Gen._
 import org.scalacheck.{Arbitrary, Gen}
 
 object CatsMonad extends App {
-  import CatsFunctor._
+
 
   implicit val treeMonad = new cats.Monad[Tree] {
     override def flatMap[A, B](fa: Tree[A])(f: A => Tree[B]): Tree[B] =
@@ -40,23 +40,24 @@ object CatsMonad extends App {
       }
   }
 
-  val genLeafMonad: Gen[Leaf[Int => Int]] = for {v <- arbitrary[Int] } yield Leaf((_: Int) => v)
+  val genLeafMonad: Gen[Leaf[Int => Int]] =  for {v <- arbitrary[Int => Int] } yield Leaf(v)
 
   val genBranchMonad: Gen[Branch[Int => Int]] = for {
-    _ <- arbitrary[Int]
+    _ <- arbitrary[Int => Int]
     l <- genTreeMonad
     r <- genTreeMonad
   } yield Branch(l, r)
 
-  def genTreeMonad: Gen[Tree[Int => Int]] = oneOf(genLeafMonad, genBranchMonad)
+  def genTreeMonad: Gen[Tree[Int => Int]] = genLeafMonad//oneOf(genLeafMonad, genBranchMonad)
 
   implicit val arbMonad: Arbitrary[Tree[Int => Int]] = Arbitrary[Tree[Int => Int]](genTreeMonad)
 
   val monadLaws = MonadLaws[Tree]
 
+  import CatsFunctor.{treeEq,arb}
   val rsMonad = MonadTests[Tree].monad[Int, Int, Int]
 
-//  rsMonad.all.check()
+  println(rsMonad.all)
 
   val tree: Tree[Int] = Branch(Branch(Leaf(4), Branch(Leaf(5), Leaf(6))),Leaf(8))
 
