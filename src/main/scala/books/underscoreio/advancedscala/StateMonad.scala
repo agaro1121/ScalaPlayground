@@ -96,7 +96,7 @@ object PostFixExample extends App {
   println(evalOne("32").run(List.empty).value)
 
   def evalAll(input: List[String]): CalcState[Int] = {
-    input.foldLeft(pure[List[Int], Int](0)/*0.pure[CalcState]*/) {
+    input.foldLeft(pure[List[Int], Int](0) /*0.pure[CalcState]*/) {
       case (acc, string) => acc.flatMap(_ => evalOne(string))
     }
   }
